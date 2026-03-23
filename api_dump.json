@@ -1,0 +1,1032 @@
+{
+  "forecast_today": [
+    {
+      "itemId": 1,
+      "itemName": "Bread Omelette",
+      "cluster": "egg_snacks",
+      "mealPeriod": "morning",
+      "stallId": 1,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 45 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 4.4
+    },
+    {
+      "itemId": 2,
+      "itemName": "Cheese Sandwich",
+      "cluster": "sandwiches",
+      "mealPeriod": "lunch",
+      "stallId": 1,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.0
+    },
+    {
+      "itemId": 3,
+      "itemName": "Choco Cheese Sandwich",
+      "cluster": "sandwiches",
+      "mealPeriod": "lunch",
+      "stallId": 1,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.5
+    },
+    {
+      "itemId": 4,
+      "itemName": "French Fries",
+      "cluster": "fries",
+      "mealPeriod": "evening",
+      "stallId": 1,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 40 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.0
+    },
+    {
+      "itemId": 5,
+      "itemName": "Half Boil",
+      "cluster": "egg_snacks",
+      "mealPeriod": "morning",
+      "stallId": 1,
+      "predictedQty": 3,
+      "rangeLow": 2,
+      "rangeHigh": 3,
+      "topReasons": [
+        "7-day average: 60 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.8
+    },
+    {
+      "itemId": 6,
+      "itemName": "Paneer Frankie",
+      "cluster": "frankies_wraps",
+      "mealPeriod": "lunch",
+      "stallId": 1,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 30 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.8
+    },
+    {
+      "itemId": 7,
+      "itemName": "Paneer Wrap",
+      "cluster": "frankies_wraps",
+      "mealPeriod": "lunch",
+      "stallId": 1,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.5
+    },
+    {
+      "itemId": 8,
+      "itemName": "Peri Peri Fries",
+      "cluster": "fries",
+      "mealPeriod": "evening",
+      "stallId": 1,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 5.0
+    },
+    {
+      "itemId": 9,
+      "itemName": "Samosa",
+      "cluster": "samosa",
+      "mealPeriod": "allday",
+      "stallId": 1,
+      "predictedQty": 3,
+      "rangeLow": 2,
+      "rangeHigh": 3,
+      "topReasons": [
+        "7-day average: 120 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.5
+    },
+    {
+      "itemId": 10,
+      "itemName": "Veg Frankie",
+      "cluster": "frankies_wraps",
+      "mealPeriod": "lunch",
+      "stallId": 1,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 3.6
+    },
+    {
+      "itemId": 11,
+      "itemName": "Veg Sandwich",
+      "cluster": "sandwiches",
+      "mealPeriod": "lunch",
+      "stallId": 1,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 40 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.4
+    },
+    {
+      "itemId": 12,
+      "itemName": "Omelette",
+      "cluster": "egg_snacks",
+      "mealPeriod": "morning",
+      "stallId": 1,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 50 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.6
+    },
+    {
+      "itemId": 13,
+      "itemName": "ABC Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 20 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.8
+    },
+    {
+      "itemId": 14,
+      "itemName": "Amla Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 15 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 15,
+      "itemName": "Apple Milkshake",
+      "cluster": "premium_beverages",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 20 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.2
+    },
+    {
+      "itemId": 16,
+      "itemName": "Cucumber Cut",
+      "cluster": "cut_fruits",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 17,
+      "itemName": "Fruit Salad",
+      "cluster": "cut_fruits",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 20 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.8
+    },
+    {
+      "itemId": 18,
+      "itemName": "Grapes Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 18 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.4
+    },
+    {
+      "itemId": 19,
+      "itemName": "Lemon Juice",
+      "cluster": "citrus_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 30 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.2
+    },
+    {
+      "itemId": 20,
+      "itemName": "Lemon Soda",
+      "cluster": "citrus_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 28 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 21,
+      "itemName": "Musk Melon Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 20 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.2
+    },
+    {
+      "itemId": 22,
+      "itemName": "Nannari Sharbat",
+      "cluster": "premium_beverages",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 22 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 23,
+      "itemName": "Orange Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.6
+    },
+    {
+      "itemId": 24,
+      "itemName": "Pineapple Cut",
+      "cluster": "cut_fruits",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 22 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 25,
+      "itemName": "Pineapple Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 20 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.6
+    },
+    {
+      "itemId": 26,
+      "itemName": "Pomegranate Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 18 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.0
+    },
+    {
+      "itemId": 27,
+      "itemName": "Strawberry Mojito",
+      "cluster": "premium_beverages",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 20 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.5
+    },
+    {
+      "itemId": 28,
+      "itemName": "Sweet Lime Juice",
+      "cluster": "citrus_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 28 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.0
+    },
+    {
+      "itemId": 29,
+      "itemName": "Watermelon Cut",
+      "cluster": "cut_fruits",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 30 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.6
+    },
+    {
+      "itemId": 30,
+      "itemName": "Watermelon Juice",
+      "cluster": "fresh_juices",
+      "mealPeriod": "afternoon",
+      "stallId": 2,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.0
+    },
+    {
+      "itemId": 31,
+      "itemName": "Black Coffee",
+      "cluster": "hot_beverages",
+      "mealPeriod": "morning",
+      "stallId": 2,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 40 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 32,
+      "itemName": "Black Tea",
+      "cluster": "hot_beverages",
+      "mealPeriod": "morning",
+      "stallId": 2,
+      "predictedQty": 3,
+      "rangeLow": 2,
+      "rangeHigh": 3,
+      "topReasons": [
+        "7-day average: 55 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.9
+    },
+    {
+      "itemId": 33,
+      "itemName": "Filter Coffee",
+      "cluster": "hot_beverages",
+      "mealPeriod": "morning",
+      "stallId": 2,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 45 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.2
+    },
+    {
+      "itemId": 34,
+      "itemName": "Ginger Tea",
+      "cluster": "hot_beverages",
+      "mealPeriod": "morning",
+      "stallId": 2,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 50 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 0.8
+    },
+    {
+      "itemId": 35,
+      "itemName": "Egg Dosa",
+      "cluster": "dosa_batter",
+      "mealPeriod": "morning",
+      "stallId": 3,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 40 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 3.6
+    },
+    {
+      "itemId": 36,
+      "itemName": "Ghee Roast",
+      "cluster": "dosa_batter",
+      "mealPeriod": "morning",
+      "stallId": 3,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 3.6
+    },
+    {
+      "itemId": 37,
+      "itemName": "Medhu Vadai",
+      "cluster": "dosa_batter",
+      "mealPeriod": "morning",
+      "stallId": 3,
+      "predictedQty": 3,
+      "rangeLow": 2,
+      "rangeHigh": 3,
+      "topReasons": [
+        "7-day average: 60 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.5
+    },
+    {
+      "itemId": 38,
+      "itemName": "Onion Uthappam",
+      "cluster": "dosa_batter",
+      "mealPeriod": "morning",
+      "stallId": 3,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.6
+    },
+    {
+      "itemId": 39,
+      "itemName": "Plain Dosa",
+      "cluster": "dosa_batter",
+      "mealPeriod": "morning",
+      "stallId": 3,
+      "predictedQty": 3,
+      "rangeLow": 2,
+      "rangeHigh": 3,
+      "topReasons": [
+        "7-day average: 55 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 3.6
+    },
+    {
+      "itemId": 40,
+      "itemName": "Podi Dosa",
+      "cluster": "dosa_batter",
+      "mealPeriod": "morning",
+      "stallId": 3,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 45 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.8
+    },
+    {
+      "itemId": 41,
+      "itemName": "Chapathi Set (3pcs)",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 40 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.4
+    },
+    {
+      "itemId": 42,
+      "itemName": "Chilly Mushroom",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 30 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.5
+    },
+    {
+      "itemId": 43,
+      "itemName": "Chilly Parota",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 28 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.2
+    },
+    {
+      "itemId": 44,
+      "itemName": "Curd Rice with Papad",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 45 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.4
+    },
+    {
+      "itemId": 45,
+      "itemName": "Egg Fried Rice",
+      "cluster": "egg_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 35 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.8
+    },
+    {
+      "itemId": 46,
+      "itemName": "Egg Gobi Noodles",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 3.2
+    },
+    {
+      "itemId": 47,
+      "itemName": "Egg Gobi Pasta",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 22 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.5
+    },
+    {
+      "itemId": 48,
+      "itemName": "Egg Gravy",
+      "cluster": "egg_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 50 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.0
+    },
+    {
+      "itemId": 49,
+      "itemName": "Egg Noodles",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 30 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.2
+    },
+    {
+      "itemId": 50,
+      "itemName": "Egg Pasta",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 2.0
+    },
+    {
+      "itemId": 51,
+      "itemName": "Gobi Egg Rice",
+      "cluster": "egg_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 25 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 3.0
+    },
+    {
+      "itemId": 52,
+      "itemName": "Gobi Pasta",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 22 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.8
+    },
+    {
+      "itemId": 53,
+      "itemName": "Gobi Rice",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 30 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 4.4
+    },
+    {
+      "itemId": 54,
+      "itemName": "Sambar Rice",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 3,
+      "rangeLow": 2,
+      "rangeHigh": 3,
+      "topReasons": [
+        "7-day average: 55 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 4.2
+    },
+    {
+      "itemId": 55,
+      "itemName": "Veg Biryani",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 40 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 4.4
+    },
+    {
+      "itemId": 56,
+      "itemName": "Veg Fried Rice",
+      "cluster": "rice_mains",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 2,
+      "rangeLow": 1,
+      "rangeHigh": 2,
+      "topReasons": [
+        "7-day average: 38 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 4.0
+    },
+    {
+      "itemId": 57,
+      "itemName": "Veg Noodles",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 32 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.6
+    },
+    {
+      "itemId": 58,
+      "itemName": "Veg Pasta",
+      "cluster": "noodles_pasta",
+      "mealPeriod": "lunch",
+      "stallId": 4,
+      "predictedQty": 1,
+      "rangeLow": 1,
+      "rangeHigh": 1,
+      "topReasons": [
+        "7-day average: 28 units",
+        "Holiday \u2014 canteen mostly closed (-70%)"
+      ],
+      "anomalyFlag": false,
+      "confidence": "Low",
+      "estimatedCostIfOver": 1.4
+    }
+  ],
+  "impact_summary": {
+    "totalWasteInr": 1282.0,
+    "totalRevenue": 1456.0,
+    "totalProfit": -438.0,
+    "totalWasteQty": 99,
+    "forecastAccuracy": 3.39,
+    "avgMape": 52.12,
+    "vsBaselineInr": 0.0,
+    "wasteReductionPct": 0.0,
+    "fromDate": "2026-03-01",
+    "toDate": "2026-03-22",
+    "totalDays": 2,
+    "avgDailyWasteInr": 641.0,
+    "avgDailyRevenue": 728.0,
+    "topWastedItems": [
+      {
+        "itemName": "Samosa",
+        "totalWasteQty": 15,
+        "totalWasteCost": 75.0
+      },
+      {
+        "itemName": "Peri Peri Fries",
+        "totalWasteQty": 2,
+        "totalWasteCost": 50.0
+      },
+      {
+        "itemName": "Gobi Rice",
+        "totalWasteQty": 2,
+        "totalWasteCost": 44.0
+      },
+      {
+        "itemName": "Veg Biryani",
+        "totalWasteQty": 2,
+        "totalWasteCost": 44.0
+      },
+      {
+        "itemName": "Sambar Rice",
+        "totalWasteQty": 3,
+        "totalWasteCost": 42.0
+      }
+    ]
+  }
+}

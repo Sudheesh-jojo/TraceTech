@@ -1,0 +1,31 @@
+# Node
+node_modules/
+build/
+
+# Java (Spring Boot)
+target/
+*.class
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# ML Models
+*.pkl
+*.keras
+*.h5
+*.zip
+
+# Env
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# React (important)
+tracetech-react (1)/tracetech/build/
