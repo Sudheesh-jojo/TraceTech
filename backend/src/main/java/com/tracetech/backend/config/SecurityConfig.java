@@ -10,7 +10,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -22,32 +21,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtFilter jwtFilter;
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            // Disable CSRF — not needed for REST APIs
+            // Disable CSRF
             .csrf(AbstractHttpConfigurer::disable)
 
-            // Enable CORS — needed for React frontend on different port
+            // Enable CORS
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-            // Stateless sessions — JWT handles auth, no server sessions
+            // Stateless session
             .sessionManagement(session ->
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-            // Define which endpoints are public vs protected
+            // 🔥 IMPORTANT: Allow all APIs (for now)
             .authorizeHttpRequests(auth -> auth
-                // Public endpoints — no token needed
-                .requestMatchers("/api/auth/**").permitAll()
-
-                // Everything else requires a valid JWT token
-                .anyRequest().authenticated()
-            )
-
-            // Add JWT filter before the default username/password filter
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .anyRequest().permitAll()
+            );
 
         return http.build();
     }
@@ -61,17 +51,18 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // Allow React frontend (port 3000) to call our API
         config.setAllowedOrigins(List.of(
             "http://localhost:3000",
-            "http://localhost:5173"  // Vite default port
+            "http://localhost:5173"
         ));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
+
         return source;
     }
 }
