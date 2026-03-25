@@ -1,28 +1,28 @@
-# TraceTech 🚀
+# TraceTech 
 
 AI-powered canteen demand forecasting system.
 
-## 🧩 Architecture
+##  Architecture
 React → Spring Boot → FastAPI (ML)
 
-## 🔧 Tech Stack
+##  Tech Stack
 - Frontend: React
 - Backend: Spring Boot
 - ML API: FastAPI
 - Database: MySQL
 
-## 📂 Project Structure
+##  Project Structure
 - backend/ → Spring Boot API
 - fastapi/ → ML model service
 - tracetech-react/ → Frontend
 
-## 🚀 Features
+##  Features
 - Demand forecasting
 - Weather-based prediction
 - Sales tracking
 - Menu management
 
-## ▶️ How to Run
+##  How to Run
 
 ### Backend
 cd backend  
