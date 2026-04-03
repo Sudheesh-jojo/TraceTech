@@ -24,6 +24,15 @@ React → Spring Boot → FastAPI (ML)
 
 ##  How to Run
 
+Set these environment variables before starting the services:
+
+- `DB_URL`
+- `DB_USERNAME`
+- `DB_PASSWORD`
+- `JWT_SECRET`
+- `WEATHER_API_KEY` (optional; mock weather is used when omitted)
+- `ML_SERVICE_URL` (optional; defaults to `http://localhost:8000`)
+
 ### Backend
 cd backend  
 mvn spring-boot:run  
@@ -33,6 +42,6 @@ cd fastapi
 uvicorn main:app --reload  
 
 ### Frontend
-cd tracetech-react  
+cd tracetech-react\tracetech  
 npm install  
 npm start  

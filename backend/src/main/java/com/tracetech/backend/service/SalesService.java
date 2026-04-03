@@ -9,6 +9,7 @@ import com.tracetech.backend.repository.SalesActualRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -80,6 +81,7 @@ public class SalesService {
     }
 
     // ── Submit sales for multiple items in one call ─────────────
+    @Transactional
     public List<SalesSubmitResponse> submitBulkSales(List<SalesSubmitRequest> requests) {
         return requests.stream()
                 .map(this::submitSales)

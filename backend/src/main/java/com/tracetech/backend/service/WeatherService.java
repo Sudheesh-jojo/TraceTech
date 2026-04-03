@@ -44,7 +44,7 @@ public class WeatherService {
         }
 
         // Fetch live from OpenWeatherMap
-        if (apiKey.equals("YOUR_API_KEY_HERE")) {
+        if (apiKey == null || apiKey.isBlank() || apiKey.equals("YOUR_API_KEY_HERE")) {
             log.warn("No API key set — returning mock weather");
             return getMockWeather();
         }

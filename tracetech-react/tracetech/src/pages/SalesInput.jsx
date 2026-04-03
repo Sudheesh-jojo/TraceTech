@@ -155,7 +155,7 @@ export default function SalesInput() {
               const prep  = Number(d.prepared) || 0;
               const sold  = Number(d.sold)     || 0;
               const waste = prep - sold;
-              const wasteCost = waste * (item.costPrice || 0);
+              const wasteCost = waste * (item.ingredientCostPerUnit || 0);
               const hasErr = errors[item.id];
 
               return (

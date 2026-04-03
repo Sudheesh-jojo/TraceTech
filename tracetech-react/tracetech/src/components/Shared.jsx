@@ -73,6 +73,14 @@ export function HBarChartWidget({ labels, data, height = 200 }) {
 
 // ── Mini Bar Chart (7-day) ──────────────────────────────
 export function MiniBarChartWidget({ data }) {
+  const labels = data.map((d, index) => {
+    if (d.forecastDate) {
+      return new Date(d.forecastDate).toLocaleDateString('en-IN', { weekday: 'short' });
+    }
+    return d.day || `Day ${index + 1}`;
+  });
+  const values = data.map((d) => d.predictedQty ?? d.qty ?? 0);
+
   const options = {
     responsive: true,
     maintainAspectRatio: false,
@@ -83,8 +91,8 @@ export function MiniBarChartWidget({ data }) {
     },
   };
   const chartData = {
-    labels: data.map((d) => d.day),
-    datasets: [{ data: data.map((d) => d.qty), backgroundColor: '#3b82f6', borderRadius: 3 }],
+    labels,
+    datasets: [{ data: values, backgroundColor: '#3b82f6', borderRadius: 3 }],
   };
   return (
     <div style={{ height: 90 }}>

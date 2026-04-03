@@ -12,8 +12,8 @@ export default function LoginPage({ onLogin }) {
     setError('');
     try {
       const res = await login(email, password);
-      // api returns { token, vendor }
       localStorage.setItem('tt_token', res.token);
+      localStorage.setItem('tt_email', res.email || email);
       onLogin();
     } catch (e) {
       setError('Invalid email or password');

@@ -14,7 +14,7 @@ encoders  = joblib.load(os.path.join(BASE, "encoders.pkl"))
 
 try:
     import keras
-    lstm_model = keras.saving.load_model(os.path.join(BASE, "lstm_model_keras.zip"))
+    lstm_model = keras.saving.load_model(os.path.join(BASE, "lstm_model.keras.zip"))
     LSTM_AVAILABLE = True
     print("LSTM loaded")
 except Exception as e:

@@ -14,6 +14,7 @@ import java.util.List;
 public class ForecastResponse {
     private Long itemId;
     private String itemName;
+    private String forecastDate;
     private String cluster;
     private String mealPeriod;
     private Integer stallId;

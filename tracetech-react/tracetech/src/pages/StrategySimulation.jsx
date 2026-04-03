@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getTodayForecast, simulateForecast } from '../api/api';
+import { getMenuItems, getTodayForecast, simulateForecast } from '../api/api';
 import { ConfBadge, Loading } from '../components/Shared';
 
 const DAYS    = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
@@ -17,12 +17,18 @@ export default function StrategySimulation() {
 
   const [normal, setNormal]       = useState([]);
   const [simulated, setSimulated] = useState([]);
+  const [menuItems, setMenuItems] = useState([]);
   const [loading, setLoading]     = useState(false);
   const [ran, setRan]             = useState(false);
 
   // Load normal (today's) forecast once on mount
   useEffect(() => {
-    getTodayForecast().then(setNormal).catch(() => {});
+    Promise.all([getTodayForecast(), getMenuItems()])
+      .then(([forecastData, menuData]) => {
+        setNormal(forecastData);
+        setMenuItems(menuData);
+      })
+      .catch(() => {});
   }, []);
 
   const update = (key, val) => setForm((p) => ({ ...p, [key]: val }));
@@ -50,8 +56,12 @@ export default function StrategySimulation() {
 
   const totalNormal = normal.reduce((s, f) => s + f.predictedQty, 0);
   const totalSim    = simulated.reduce((s, f) => s + f.predictedQty, 0);
-  const revNormal   = normal.reduce((s, f) => s + f.predictedQty * (f.sellingPrice || 50), 0);
-  const revSim      = simulated.reduce((s, f) => s + f.predictedQty * (f.sellingPrice || 50), 0);
+  const priceByItemId = menuItems.reduce((acc, item) => {
+    acc[item.id] = item.sellingPrice || 0;
+    return acc;
+  }, {});
+  const revNormal = normal.reduce((s, f) => s + f.predictedQty * (priceByItemId[f.itemId] || 0), 0);
+  const revSim = simulated.reduce((s, f) => s + f.predictedQty * (priceByItemId[f.itemId] || 0), 0);
 
   return (
     <div className="content">
