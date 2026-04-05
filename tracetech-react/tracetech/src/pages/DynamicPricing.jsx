@@ -24,12 +24,7 @@ const ELAS_LABEL = {
   0.8: 'High',
 };
 
-const BUNDLES = [
-  { items: ['Samosa', 'Filter Coffee'], combo: 25, saving: 2, reason: 'Most popular morning combo' },
-  { items: ['Plain Dosa', 'Filter Coffee'], combo: 40, saving: 5, reason: 'Classic breakfast bundle' },
-  { items: ['Veg Biryani', 'Lemon Juice'], combo: 70, saving: 5, reason: 'Lunch combo deal' },
-  { items: ['French Fries', 'Lemon Soda'], combo: 70, saving: 5, reason: 'Evening snack bundle' },
-];
+
 
 function getSuggestion(predictedQty, baseDailyQty, elasticity, currentPrice) {
   const ratio = predictedQty / baseDailyQty;
@@ -253,21 +248,6 @@ export default function DynamicPricing() {
             </table>
           </div>
 
-          {/* 🔹 Bundles */}
-          <div className="bundle-section">
-            <h3>Bundle Opportunities</h3>
-            <div className="bundle-grid">
-              {BUNDLES.map((b, idx) => (
-                <div className="bundle-card modern-card" key={idx}>
-                  <h4>{b.items.join(' + ')}</h4>
-                  <p>
-                    ₹{b.combo} <span>Save ₹{b.saving}</span>
-                  </p>
-                  <small>{b.reason}</small>
-                </div>
-              ))}
-            </div>
-          </div>
         </>
       )}
     </div>
