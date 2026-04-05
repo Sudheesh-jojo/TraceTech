@@ -16,13 +16,13 @@ export default function SalesInput() {
   useEffect(() => {
     Promise.all([getMenuByStall(), getTodayForecast()])
       .then(([s, f]) => {
-        // API returns { 1: [...], 2: [...] } — convert to array
-        const stallNames = ['','Snacks','Juices','South Indian','Lunch']
+        // API returns { 1: [...], 2: [...] } -- convert to array
+        const stallNames = ['','Snacks','Juices','South Indian','Lunch'];
         const stallsArr = Object.entries(s).map(([id, items]) => ({
           stallId: Number(id),
           stallName: stallNames[Number(id)] || `Stall ${id}`,
           items,
-        }))
+        }));
         setStalls(stallsArr);
         setForecasts(f);
         setActiveStall(stallsArr[0]?.stallId || null);
@@ -51,9 +51,24 @@ export default function SalesInput() {
     }
   };
 
+  // Quick fill actions
+  const fillAll = (mode) => {
+    const newData = {};
+    forecasts.forEach((f) => {
+      newData[f.itemId] = {
+        prepared: f.predictedQty,
+        sold: mode === 'predicted' ? f.predictedQty
+            : mode === 'zero' ? 0
+            : f.predictedQty, // soldout
+      };
+    });
+    setSalesData(newData);
+    setErrors({});
+  };
+
   const handleSubmit = async () => {
     if (Object.keys(errors).length > 0) {
-      setToast('❌ Fix errors before submitting');
+      setToast('Fix errors before submitting');
       setTimeout(() => setToast(''), 3000);
       return;
     }
@@ -77,10 +92,10 @@ export default function SalesInput() {
         return s + a.qtySold * (fc?.sellingPrice || 0);
       }, 0);
 
-      setToast(`✅ Submitted! Waste: ${totalWaste} units · Revenue: ₹${totalRev.toLocaleString()}`);
+      setToast(`Submitted! Waste: ${totalWaste} units | Revenue: Rs.${totalRev.toLocaleString()}`);
       setTimeout(() => setToast(''), 6000);
     } catch (e) {
-      setToast('❌ Submission failed. Please try again.');
+      setToast('Submission failed. Please try again.');
       setTimeout(() => setToast(''), 4000);
     } finally {
       setSubmitting(false);
@@ -98,18 +113,29 @@ export default function SalesInput() {
       const d    = salesData[f.itemId] || {};
       const prep = Number(d.prepared) || 0;
       const sold = Number(d.sold)     || 0;
-      return { prepared: acc.prepared + prep, sold: acc.sold + sold, waste: acc.waste + (prep - sold) };
+      return { prepared: acc.prepared + prep, sold: acc.sold + sold, waste: acc.waste + Math.max(0, prep - sold) };
     },
     { prepared: 0, sold: 0, waste: 0 }
   );
 
+  // End of day summary (all items, not just current stall)
+  const eodSummary = {
+    totalPrepared: Object.values(salesData).reduce((s, v) => s + (Number(v.prepared) || 0), 0),
+    totalSold:     Object.values(salesData).reduce((s, v) => s + (Number(v.sold) || 0), 0),
+    totalWaste:    Object.values(salesData).reduce((s, v) => s + Math.max(0, (Number(v.prepared) || 0) - (Number(v.sold) || 0)), 0),
+    totalRevenue:  forecasts.reduce((s, f) => {
+      const sold = Number(salesData[f.itemId]?.sold) || 0;
+      return s + sold * (f.sellingPrice || 0);
+    }, 0),
+  };
+
   return (
     <div className="content">
       {loading ? (
-        <Loading text="Loading items…" />
+        <Loading text="Loading items..." />
       ) : (
         <>
-          {/* ── Date Selector ── */}
+          {/* -- Date Selector -- */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 18 }}>
             <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Sales date:</div>
             <input
@@ -119,7 +145,15 @@ export default function SalesInput() {
             />
           </div>
 
-          {/* ── Stall Tabs ── */}
+          {/* -- Quick Fill Buttons -- */}
+          <div className="quick-fill-bar">
+            <span className="quick-fill-label">Quick fill:</span>
+            <button className="quick-fill-btn" onClick={() => fillAll('predicted')}>Fill all as predicted</button>
+            <button className="quick-fill-btn" onClick={() => fillAll('zero')}>Clear all sold</button>
+            <button className="quick-fill-btn" onClick={() => fillAll('soldout')}>Mark all as sold out</button>
+          </div>
+
+          {/* -- Stall Tabs -- */}
           <div className="stall-tabs">
             {stalls.map((s) => (
               <button
@@ -132,7 +166,7 @@ export default function SalesInput() {
             ))}
           </div>
 
-          {/* ── Items Table ── */}
+          {/* -- Items Table -- */}
           <div className="card">
             {/* Header row */}
             <div
@@ -189,8 +223,8 @@ export default function SalesInput() {
                   <div>
                     {d.sold !== '' && d.prepared !== '' && (
                       waste > 0
-                        ? <div className="waste-preview">{waste} wasted — ₹{wasteCost} lost</div>
-                        : <div className="waste-ok">✓ No waste</div>
+                        ? <div className="waste-preview">{waste} wasted -- Rs.{wasteCost} lost</div>
+                        : <div className="waste-ok">No waste</div>
                     )}
                   </div>
                 </div>
@@ -214,15 +248,35 @@ export default function SalesInput() {
             </div>
           </div>
 
-          {/* ── Submit Button ── */}
-          <div style={{ marginTop: 20, textAlign: 'center' }}>
+          {/* -- End of Day Summary -- */}
+          <div className="eod-summary">
+            <div className="eod-card">
+              <div className="eod-card-value">{eodSummary.totalPrepared}</div>
+              <div className="eod-card-label">Total Prepared</div>
+            </div>
+            <div className="eod-card">
+              <div className="eod-card-value text-green">{eodSummary.totalSold}</div>
+              <div className="eod-card-label">Total Sold</div>
+            </div>
+            <div className="eod-card">
+              <div className="eod-card-value text-red">{eodSummary.totalWaste}</div>
+              <div className="eod-card-label">Total Waste</div>
+            </div>
+            <div className="eod-card">
+              <div className="eod-card-value text-blue">Rs.{eodSummary.totalRevenue.toLocaleString()}</div>
+              <div className="eod-card-label">Est. Revenue</div>
+            </div>
+          </div>
+
+          {/* -- Submit Button -- */}
+          <div style={{ marginTop: 10, textAlign: 'center' }}>
             <button
               className="btn btn-success"
               style={{ padding: '12px 40px', fontSize: 14 }}
               onClick={handleSubmit}
               disabled={submitting}
             >
-              {submitting ? 'Submitting…' : '📤 Submit All Sales'}
+              {submitting ? 'Submitting...' : 'Submit All Sales'}
             </button>
             <div style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 8 }}>
               Tomorrow's predictions will be updated after submission

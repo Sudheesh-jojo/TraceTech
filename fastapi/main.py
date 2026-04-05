@@ -3,7 +3,17 @@ from pydantic import BaseModel
 from typing import List
 import joblib
 import numpy as np
+import pandas as pd
 import os
+import logging
+
+try:
+    from prophet import Prophet
+    PROPHET_AVAILABLE = True
+    print("Prophet loaded")
+except ImportError:
+    PROPHET_AVAILABLE = False
+    print("Prophet not available")
 
 app = FastAPI(title="TraceTech ML Service", version="2.0.0")
 
@@ -127,7 +137,58 @@ def predict_lstm(req: PredictRequest) -> float:
         return predict_xgb(req)
 
 
-def build_reasons(req, predicted, base):
+def predict_prophet(req: PredictRequest) -> float:
+    """Fit Prophet on the fly using historical data reconstructed from request fields."""
+    if not PROPHET_AVAILABLE:
+        raise RuntimeError("Prophet not installed")
+
+    today = pd.Timestamp(req.date)
+    dates = [today - pd.Timedelta(days=i) for i in range(14, 0, -1)]
+
+    # Use rolling averages to reconstruct approximate history
+    qtys = []
+    for i, d in enumerate(dates):
+        if i < 7:
+            qtys.append(req.rolling_14day_avg if req.rolling_14day_avg > 0 else req.rolling_7day_avg)
+        else:
+            qtys.append(req.rolling_7day_avg if req.rolling_7day_avg > 0 else float(req.prev_7day_qty))
+
+    # Override with actual known values
+    qtys[-1] = float(req.prev_1day_qty)
+    qtys[-2] = float(req.prev_2day_qty) if req.prev_2day_qty > 0 else qtys[-2]
+    qtys[-3] = float(req.prev_3day_qty) if req.prev_3day_qty > 0 else qtys[-3]
+    qtys[-7] = float(req.prev_7day_qty)
+
+    df = pd.DataFrame({'ds': dates, 'y': qtys})
+
+    # Add regressors
+    df['is_holiday'] = req.is_holiday
+    df['is_exam_week'] = req.is_exam_week
+
+    # Suppress Prophet's verbose stdout logging
+    logging.getLogger('cmdstanpy').setLevel(logging.WARNING)
+    logging.getLogger('prophet').setLevel(logging.WARNING)
+
+    m = Prophet(
+        daily_seasonality=False,
+        weekly_seasonality=True,
+        yearly_seasonality=False,
+        changepoint_prior_scale=0.05,
+    )
+    m.add_regressor('is_holiday')
+    m.add_regressor('is_exam_week')
+    m.fit(df)
+
+    # Predict for today
+    future = pd.DataFrame({'ds': [today]})
+    future['is_holiday'] = req.is_holiday
+    future['is_exam_week'] = req.is_exam_week
+
+    forecast = m.predict(future)
+    return float(max(1, forecast['yhat'].values[0]))
+
+
+def build_reasons(req, predicted, base, prophet_pred=None, xgb_pred=None):
     reasons = []
     if base > 0:
         reasons.append(f"7-day average: {int(base)} units")
@@ -149,6 +210,10 @@ def build_reasons(req, predicted, base):
         reasons.append("First week of semester — high footfall")
     if req.is_last_week == 1:
         reasons.append("Last week of semester — reduced footfall")
+    # Prophet trend insight
+    if prophet_pred is not None and xgb_pred is not None and xgb_pred > 0:
+        if abs(prophet_pred - xgb_pred) / xgb_pred > 0.15:
+            reasons.append("Prophet trend model detected unusual pattern")
     if not reasons:
         reasons.append("Based on 7-day rolling average")
     return reasons[:3]
@@ -157,8 +222,18 @@ def build_reasons(req, predicted, base):
 def do_predict(req: PredictRequest) -> PredictResponse:
     xgb_pred  = predict_xgb(req)
     lstm_pred = predict_lstm(req)
-    raw_combined  = (0.6 * xgb_pred) + (0.4 * lstm_pred)
-    
+
+    # Try Prophet — fall back to XGBoost+LSTM if it fails
+    prophet_pred = None
+    try:
+        prophet_pred = predict_prophet(req)
+        # 3-model ensemble: 50% XGBoost + 30% LSTM + 20% Prophet
+        raw_combined = (0.50 * xgb_pred) + (0.30 * lstm_pred) + (0.20 * prophet_pred)
+    except Exception as e:
+        print(f"Prophet fallback: {e}")
+        # Fallback to original 2-model ensemble
+        raw_combined = (0.60 * xgb_pred) + (0.40 * lstm_pred)
+
     # Apply business logic heuristics to correct underfitted model
     multiplier = 1.0
     if req.day_of_week == 4:
@@ -173,11 +248,11 @@ def do_predict(req: PredictRequest) -> PredictResponse:
         multiplier *= 1.10
     elif req.weather_condition == 3:
         multiplier *= 0.70
-        
+
     predicted = max(1, int(round(raw_combined * multiplier)))
 
     base     = req.rolling_7day_avg if req.rolling_7day_avg > 0 else req.prev_7day_qty
-    reasons  = build_reasons(req, predicted, base)
+    reasons  = build_reasons(req, predicted, base, prophet_pred=prophet_pred, xgb_pred=xgb_pred)
 
     anomaly  = (req.prev_1day_qty > 0 and
                 abs(predicted - req.prev_1day_qty) / req.prev_1day_qty > 0.40)
@@ -204,9 +279,10 @@ def do_predict(req: PredictRequest) -> PredictResponse:
 def root():
     return {
         "service": "TraceTech ML Service",
-        "version": "2.0.0",
+        "version": "3.0.0",
         "xgboost": "loaded",
-        "lstm": "loaded" if LSTM_AVAILABLE else "unavailable"
+        "lstm": "loaded" if LSTM_AVAILABLE else "unavailable",
+        "prophet": "active" if PROPHET_AVAILABLE else "unavailable"
     }
 
 
@@ -214,8 +290,12 @@ def root():
 def health():
     return {
         "status": "ok",
-        "model": "xgboost_lstm_ensemble_v1",
-        "lstm_available": LSTM_AVAILABLE
+        "models": {
+            "xgboost": "loaded",
+            "lstm": "loaded" if LSTM_AVAILABLE else "unavailable",
+            "prophet": "active" if PROPHET_AVAILABLE else "unavailable"
+        },
+        "ensemble": "50% XGBoost + 30% LSTM + 20% Prophet" if PROPHET_AVAILABLE else "60% XGBoost + 40% LSTM"
     }
 
 

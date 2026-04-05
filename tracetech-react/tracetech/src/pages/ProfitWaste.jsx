@@ -4,11 +4,11 @@ import { Loading, LineChartWidget, HBarChartWidget } from '../components/Shared'
 
 export default function ProfitWaste() {
   const [impact, setImpact] = useState(null);
-  const [from, setFrom]     = useState(() => {
+  const [from, setFrom] = useState(() => {
     const d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2,'0')}-01`;
   });
-  const [to, setTo]         = useState(() => new Date().toISOString().slice(0,10));
+  const [to, setTo] = useState(() => new Date().toISOString().slice(0,10));
   const [loading, setLoading] = useState(true);
 
   const fetchData = () => {
@@ -18,121 +18,152 @@ export default function ProfitWaste() {
       .catch(() => setLoading(false));
   };
 
-  useEffect(() => { fetchData(); }, []); // eslint-disable-line
+  useEffect(() => { fetchData(); }, []);
 
   const chartLabels  = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
   const totalWaste   = impact?.totalWasteInr || 0;
   const totalBaseline = totalWaste + (impact?.vsBaselineInr || 0);
-  const wasteData    = [totalWaste * 0.20, totalWaste * 0.25, totalWaste * 0.30, totalWaste * 0.25].map(Math.round);
-  const baselineData = [totalBaseline * 0.20, totalBaseline * 0.25, totalBaseline * 0.30, totalBaseline * 0.25].map(Math.round);
 
-  const stats = impact ? [
-    { label: 'Total days tracked',    val: impact.totalDays },
-    { label: 'Average daily waste',   val: `₹${impact.avgDailyWasteInr}` },
-    { label: 'Average daily revenue', val: `₹${impact.avgDailyRevenue?.toLocaleString()}` },
-    { label: 'Forecast accuracy',     val: `${impact.forecastAccuracy}%` },
-    { label: 'Average MAPE',          val: `${impact.avgMape}%` },
-    { label: 'Total waste qty',       val: `${impact.totalWasteQty} units` },
-    { label: 'Total profit',          val: `₹${impact.totalProfit?.toLocaleString()}` },
-  ] : [];
+  const wasteData    = [0.2,0.25,0.3,0.25].map(p => Math.round(totalWaste * p));
+  const baselineData = [0.2,0.25,0.3,0.25].map(p => Math.round(totalBaseline * p));
+
+  const withoutWaste = totalWaste + (impact?.vsBaselineInr || 0);
+  const withoutDailyLoss = impact?.totalDays > 0 ? Math.round(withoutWaste / impact.totalDays) : 0;
+  const withDailyLoss = impact?.avgDailyWasteInr || 0;
+
+  const monthName = new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
+  const topWasted = impact?.topWastedItems?.[0];
+  const annualSavings = Math.round((impact?.vsBaselineInr || 0) * 12);
 
   return (
-    <div className="content">
-      {/* ── Date Range Filter ── */}
-      <div style={{ display: 'flex', gap: 12, marginBottom: 20, alignItems: 'center', flexWrap: 'wrap' }}>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Date range:</div>
-        <input
-          type="date" value={from}
-          onChange={(e) => setFrom(e.target.value)}
-          className="form-input" style={{ width: 160, padding: '7px 10px' }}
-        />
-        <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>to</span>
-        <input
-          type="date" value={to}
-          onChange={(e) => setTo(e.target.value)}
-          className="form-input" style={{ width: 160, padding: '7px 10px' }}
-        />
-        <button className="btn btn-primary" onClick={fetchData}>Apply</button>
+    <div className="content modern">
+      
+      {/* 🔹 HEADER / FILTER BAR */}
+      <div className="glass-card flex between center wrap mb-20">
+        <div className="section-title">Profit & Waste Analytics</div>
+        <div className="flex gap-10 center wrap">
+          <input type="date" value={from} onChange={(e)=>setFrom(e.target.value)} className="input-modern"/>
+          <span className="muted">→</span>
+          <input type="date" value={to} onChange={(e)=>setTo(e.target.value)} className="input-modern"/>
+          <button className="btn-primary-modern" onClick={fetchData}>Apply</button>
+        </div>
       </div>
 
       {loading ? (
-        <Loading text="Loading analytics…" />
+        <Loading text="Loading analytics..." />
       ) : !impact ? (
-        <div className="empty">No data available for this period. Submit some sales first.</div>
+        <div className="empty">No data available.</div>
       ) : (
         <>
-          {/* ── KPI Cards ── */}
-          <div className="kpi-grid">
-            <div className="kpi-card green">
-              <div className="kpi-label">Total Revenue</div>
-              <div className="kpi-value">₹{((impact.totalRevenue || 0) / 1000).toFixed(1)}k</div>
-              <div className="kpi-sub">this period</div>
-            </div>
-            <div className="kpi-card red">
-              <div className="kpi-label">Total Waste Cost</div>
-              <div className="kpi-value">₹{(impact.totalWasteInr || 0).toLocaleString()}</div>
-              <div className="kpi-sub">reduced by {impact.wasteReductionPct || 0}%</div>
-            </div>
-            <div className="kpi-card orange">
-              <div className="kpi-label">Waste Reduction</div>
-              <div className="kpi-value">{impact.wasteReductionPct || 0}%</div>
-              <div className="kpi-sub">vs baseline method</div>
-            </div>
-            <div className="kpi-card blue">
-              <div className="kpi-label">Saved vs Baseline</div>
-              <div className="kpi-value">₹{(impact.vsBaselineInr || 0).toLocaleString()}</div>
-              <div className="kpi-sub">AI advantage</div>
-            </div>
+          {/* 🔹 AI NARRATIVE */}
+          <div className="glass-card highlight mb-20">
+            <div className="card-title">AI Impact Summary</div>
+            <p className="narrative">
+              In <strong>{monthName}</strong>, waste dropped by <strong>{impact.wasteReductionPct}%</strong>, 
+              saving <strong>Rs.{impact.vsBaselineInr?.toLocaleString()}</strong>.
+              Accuracy reached <strong>{impact.forecastAccuracy}%</strong>.
+              Revenue: <strong>Rs.{((impact.totalRevenue || 0)/1000).toFixed(1)}k</strong>.
+              {topWasted && <> Biggest loss: <strong>{topWasted.itemName}</strong>.</>}
+              Annual projected savings: <strong>Rs.{annualSavings.toLocaleString()}</strong>.
+            </p>
           </div>
 
-          {/* ── Charts ── */}
-          <div className="charts-row">
-            <div className="card">
+          {/* 🔹 KPI GRID */}
+          <div className="grid-4 mb-20">
+            <KPI label="Revenue" value={`Rs.${((impact.totalRevenue||0)/1000).toFixed(1)}k`} />
+            <KPI label="Waste Cost" value={`Rs.${totalWaste.toLocaleString()}`} danger />
+            <KPI label="Reduction" value={`${impact.wasteReductionPct}%`} />
+            <KPI label="Saved" value={`Rs.${impact.vsBaselineInr?.toLocaleString()}`} success />
+          </div>
+
+          {/* 🔹 BEFORE / AFTER */}
+          <div className="grid-2 mb-20">
+            <ComparisonCard
+              title="Without TraceTech"
+              data={[
+                ['Waste', `Rs.${withoutWaste.toLocaleString()}`],
+                ['Accuracy', '~60%'],
+                ['Daily Loss', `Rs.${withoutDailyLoss}`],
+              ]}
+              danger
+            />
+            <ComparisonCard
+              title="With TraceTech"
+              data={[
+                ['Waste', `Rs.${totalWaste.toLocaleString()}`],
+                ['Accuracy', `${impact.forecastAccuracy}%`],
+                ['Daily Loss', `Rs.${withDailyLoss}`],
+              ]}
+              success
+            />
+          </div>
+
+          {/* 🔹 CHARTS */}
+          <div className="grid-2 mb-20">
+            <div className="glass-card">
               <div className="card-title">Waste vs Baseline</div>
               <LineChartWidget
                 labels={chartLabels}
                 datasets={[
-                  {
-                    label: 'TraceTech Waste',
-                    data: wasteData,
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16,185,129,0.08)',
-                    tension: 0.4, fill: true, pointRadius: 3,
-                  },
-                  {
-                    label: 'Without TraceTech',
-                    data: baselineData,
-                    borderColor: '#ef4444',
-                    borderDash: [5, 5],
-                    backgroundColor: 'transparent',
-                    tension: 0.4, fill: false, pointRadius: 2,
-                  },
+                  { label:'AI Waste', data:wasteData, borderColor:'#22c55e', fill:true },
+                  { label:'Baseline', data:baselineData, borderColor:'#ef4444', borderDash:[5,5] }
                 ]}
-                height={200}
+                height={220}
               />
             </div>
-            <div className="card">
-              <div className="card-title">Top 5 wasted items</div>
+
+            <div className="glass-card">
+              <div className="card-title">Top Wasted Items</div>
               <HBarChartWidget
-                labels={impact.topWastedItems?.map((t) => t.itemName) || []}
-                data={impact.topWastedItems?.map((t) => t.totalWasteCost) || []}
-                height={200}
+                labels={impact.topWastedItems?.map(i=>i.itemName)||[]}
+                data={impact.topWastedItems?.map(i => Number(i.totalWasteCost)) || []}
+                height={220}
               />
             </div>
           </div>
 
-          {/* ── Summary Stats ── */}
-          <div className="card">
-            <div className="card-title">Summary Statistics</div>
-            {stats.map((s, i) => (
-              <div className="stat-row" key={i}>
-                <span className="stat-label">{s.label}</span>
-                <span className="stat-value mono">{s.val}</span>
-              </div>
-            ))}
+          {/* 🔹 STATS GRID */}
+          <div className="glass-card">
+            <div className="card-title">Summary Stats</div>
+            <div className="grid-3 stats">
+              <Stat label="Days" val={impact.totalDays}/>
+              <Stat label="Avg Waste" val={`Rs.${impact.avgDailyWasteInr}`}/>
+              <Stat label="Accuracy" val={`${impact.forecastAccuracy}%`}/>
+              <Stat label="MAPE" val={`${impact.avgMape}%`}/>
+              <Stat label="Waste Qty" val={`${impact.totalWasteQty}`}/>
+              <Stat label="Profit" val={`Rs.${impact.totalProfit?.toLocaleString()}`}/>
+            </div>
           </div>
         </>
       )}
     </div>
   );
 }
+
+/* 🔹 Small UI Components */
+
+const KPI = ({ label, value, danger, success }) => (
+  <div className={`glass-card kpi ${danger ? 'red' : success ? 'green' : ''}`}>
+    <div className="kpi-label">{label}</div>
+    <div className="kpi-value">{value}</div>
+  </div>
+);
+
+const ComparisonCard = ({ title, data, danger, success }) => (
+  <div className={`glass-card ${danger ? 'red' : success ? 'green' : ''}`}>
+    <div className="card-title">{title}</div>
+    {data.map(([k,v],i)=>(
+      <div key={i} className="row between">
+        <span className="muted">{k}</span>
+        <strong>{v}</strong>
+      </div>
+    ))}
+  </div>
+);
+
+const Stat = ({ label, val }) => (
+  <div className="stat-box">
+    <div className="muted small">{label}</div>
+    <div className="stat-val">{val}</div>
+  </div>
+);

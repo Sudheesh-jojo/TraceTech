@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import LoginPage         from './pages/LoginPage';
 import Dashboard         from './pages/Dashboard';
@@ -10,13 +10,13 @@ import StrategySimulation from './pages/StrategySimulation';
 import SalesInput        from './pages/SalesInput';
 
 const PAGES = [
-  { id: 'dashboard',   label: 'Dashboard',           icon: '⊞' },
-  { id: 'demand',      label: 'Demand Prediction',   icon: '〰' },
-  { id: 'prep',        label: 'Preparation Plan',    icon: '☑' },
-  { id: 'pricing',     label: 'Dynamic Pricing',     icon: '◈' },
-  { id: 'profit',      label: 'Profit & Waste',      icon: '+' },
-  { id: 'simulation',  label: 'Strategy Simulation', icon: '⊕' },
-  { id: 'sales',       label: 'Sales Input',         icon: '↓' },
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'demand', label: 'Demand Prediction' },
+  { id: 'prep', label: 'Preparation Plan' },
+  { id: 'pricing', label: 'Dynamic Pricing' },
+  { id: 'profit', label: 'Profit & Waste' },
+  { id: 'simulation', label: 'Strategy Simulation' },
+  { id: 'sales', label: 'Sales Input' },
 ];
 
 const PAGE_TITLES = {
@@ -29,12 +29,32 @@ const PAGE_TITLES = {
   sales:      'Sales Input',
 };
 
+function getMealPeriod(hour) {
+  if (hour < 10) return { label: 'Breakfast Service', active: true };
+  if (hour < 12) return { label: 'Morning Snacks', active: true };
+  if (hour < 15) return { label: 'Lunch Service', active: true };
+  if (hour < 18) return { label: 'Evening Snacks', active: true };
+  return { label: 'Canteen Closed', active: false };
+}
+
 function MainApp({ onLogout }) {
   const [page, setPage] = useState('dashboard');
+  const [now, setNow]   = useState(new Date());
 
-  const today = new Date().toLocaleDateString('en-IN', {
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const today = now.toLocaleDateString('en-IN', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
+
+  const timeStr = now.toLocaleTimeString('en-IN', {
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true,
+  });
+
+  const meal = getMealPeriod(now.getHours());
 
   const renderPage = () => {
     switch (page) {
@@ -51,11 +71,11 @@ function MainApp({ onLogout }) {
 
   return (
     <>
-      {/* ── Sidebar ── */}
+      {/* -- Sidebar -- */}
       <aside className="sidebar">
         <div className="sidebar-logo">
           <h1>TraceTech</h1>
-          <p>RIT Canteen · AI Forecasting</p>
+          <p>RIT Canteen - AI Forecasting</p>
         </div>
 
         <nav className="sidebar-nav">
@@ -78,18 +98,26 @@ function MainApp({ onLogout }) {
         </div>
       </aside>
 
-      {/* ── Main Panel ── */}
+      {/* -- Main Panel -- */}
       <div className="main">
         <div className="topbar">
           <div className="topbar-left">
             <h2>{PAGE_TITLES[page]}</h2>
             <p>{today}</p>
           </div>
-          {page === 'dashboard' && (
-            <button className="btn btn-primary" onClick={() => setPage('sales')}>
-              Submit today's sales
-            </button>
-          )}
+          <div className="topbar-right">
+            <div className="live-clock">
+              <span className="clock-time">{timeStr}</span>
+              <span className={`meal-badge ${meal.active ? 'active' : 'closed'}`}>
+                {meal.label}
+              </span>
+            </div>
+            {page === 'dashboard' && (
+              <button className="btn btn-primary" onClick={() => setPage('sales')}>
+                Submit today's sales
+              </button>
+            )}
+          </div>
         </div>
 
         {renderPage()}

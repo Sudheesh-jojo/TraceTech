@@ -8,7 +8,7 @@ import com.tracetech.backend.repository.SalesActualRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true) 
 public class ImpactService {
 
     private final SalesActualRepository salesActualRepository;
@@ -94,8 +95,7 @@ public class ImpactService {
             }
         }
 
-        double forecastAccuracy = allSales.isEmpty() ? 0 :
-                (double) withinRange / allSales.size() * 100;
+        double forecastAccuracy = forecastCount > 0 ? (double) withinRange / forecastCount * 100 : 0;
 
         double avgMape = forecastCount > 0 ? totalMape / forecastCount : 0;
 
