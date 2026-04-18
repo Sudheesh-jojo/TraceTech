@@ -12,18 +12,17 @@ import com.tracetech.backend.repository.ForecastRepository;
 import com.tracetech.backend.repository.MenuItemRepository;
 import com.tracetech.backend.repository.SalesActualRepository;
 import com.tracetech.backend.repository.WeatherLogRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ForecastService {
 
@@ -36,6 +35,45 @@ public class ForecastService {
 
     @Value("${ml.service.url}")
     private String mlServiceUrl;
+
+    // ── Configurable defaults from application.properties ─────────
+    @Value("${tracetech.default.temperature}")
+    private double defaultTemperature;
+
+    @Value("${tracetech.default.waste-pct}")
+    private double defaultWastePct;
+
+    @Value("${tracetech.default.days-until-exam}")
+    private int defaultDaysUntilExam;
+
+    @Value("${tracetech.semester.odd-start-month}")
+    private int semesterOddStartMonth;
+
+    @Value("${tracetech.semester.even-start-month}")
+    private int semesterEvenStartMonth;
+
+    @Value("${tracetech.semester.max-weeks}")
+    private int semesterMaxWeeks;
+
+    @Value("${tracetech.fallback.variance}")
+    private double fallbackVariance;
+
+    @Value("${tracetech.fallback.range-pct}")
+    private double fallbackRangePct;
+
+    public ForecastService(ForecastRepository forecastRepository,
+                           MenuItemRepository menuItemRepository,
+                           SalesActualRepository salesActualRepository,
+                           AcademicCalendarRepository academicCalendarRepository,
+                           WeatherLogRepository weatherLogRepository,
+                           ObjectMapper objectMapper) {
+        this.forecastRepository = forecastRepository;
+        this.menuItemRepository = menuItemRepository;
+        this.salesActualRepository = salesActualRepository;
+        this.academicCalendarRepository = academicCalendarRepository;
+        this.weatherLogRepository = weatherLogRepository;
+        this.objectMapper = objectMapper;
+    }
 
     // ── Get today's forecast for all active items ──────────────
     public List<ForecastResponse> getTodayForecast() {
@@ -120,13 +158,13 @@ public class ForecastService {
             int weekOfSem = getWeekOfSemester(date);
             request.put("week_of_semester",         weekOfSem);
             request.put("is_first_week",            weekOfSem == 1  ? 1 : 0);
-            request.put("is_last_week",             weekOfSem == 20 ? 1 : 0);
+            request.put("is_last_week",             weekOfSem == semesterMaxWeeks ? 1 : 0);
             request.put("is_exam_week",             (cal != null && "EXAM".equals(cal.getEventType())) ? 1 : 0);
             request.put("is_holiday",               (cal == null || !cal.getIsCollegeOpen()) ? 1 : 0);
             request.put("is_college_open",          (cal == null || !cal.getIsCollegeOpen()) ? 0 : 1);
-            request.put("days_until_exam",          30);
+            request.put("days_until_exam",          computeDaysUntilExam(date));
             request.put("weather_condition",        weather != null ? weather.getWeatherCondition() : 0);
-            request.put("temperature",              weather != null ? weather.getTemperature().doubleValue() : 34.0);
+            request.put("temperature",              weather != null ? weather.getTemperature().doubleValue() : defaultTemperature);
             request.put("prev_1day_qty",            prev1day);
             request.put("prev_2day_qty",            prev2day);
             request.put("prev_3day_qty",            prev3day);
@@ -204,13 +242,13 @@ public class ForecastService {
                 int weekOfSem = getWeekOfSemester(today);
                 request.put("week_of_semester",         weekOfSem);
                 request.put("is_first_week",            weekOfSem == 1  ? 1 : 0);
-                request.put("is_last_week",             weekOfSem == 20 ? 1 : 0);
+                request.put("is_last_week",             weekOfSem == semesterMaxWeeks ? 1 : 0);
                 request.put("is_exam_week",             params.getOrDefault("is_exam_week", 0));
                 request.put("is_holiday",               params.getOrDefault("is_holiday", 0));
                 request.put("is_college_open",          params.getOrDefault("is_holiday", 0).equals(1) ? 0 : 1);
-                request.put("days_until_exam",          30);
+                request.put("days_until_exam",          computeDaysUntilExam(today));
                 request.put("weather_condition",        params.getOrDefault("weather_condition", 0));
-                request.put("temperature",              params.getOrDefault("temperature", 34.0));
+                request.put("temperature",              params.getOrDefault("temperature", defaultTemperature));
                 request.put("prev_1day_qty",            prev1day);
                 request.put("prev_2day_qty",            prev2day);
                 request.put("prev_3day_qty",            prev3day);
@@ -236,7 +274,7 @@ public class ForecastService {
                 String reasonsJson = objectMapper.writeValueAsString(reasons);
 
                 double costIfOver = Math.round(
-                        predictedQty * 0.10
+                        predictedQty * defaultWastePct
                         * item.getIngredientCostPerUnit().doubleValue() * 100.0) / 100.0;
 
                 responses.add(ForecastResponse.builder()
@@ -267,15 +305,16 @@ public class ForecastService {
     // ── Fallback if FastAPI is down ────────────────────────────
     private Forecast fallbackForecast(MenuItem item, LocalDate date) {
         int base = item.getBaseDailyQty();
-        int predicted = (int) Math.round(base * (0.95 + new Random().nextDouble() * 0.1));
+        double halfVariance = fallbackVariance / 2.0;
+        int predicted = (int) Math.round(base * ((1.0 - halfVariance) + new Random().nextDouble() * fallbackVariance));
         String reasonsJson = "[\"Based on historical average (ML service unavailable)\"]";
 
         return Forecast.builder()
                 .menuItem(item)
                 .forecastDate(date)
                 .predictedQty(predicted)
-                .rangeLow((int)(predicted * 0.88))
-                .rangeHigh((int)(predicted * 1.12))
+                .rangeLow((int)(predicted * (1.0 - fallbackRangePct)))
+                .rangeHigh((int)(predicted * (1.0 + fallbackRangePct)))
                 .topReasons(reasonsJson)
                 .anomalyFlag(false)
                 .confidence("Low")
@@ -284,13 +323,17 @@ public class ForecastService {
     }
 
     // ── Helpers ────────────────────────────────────────────────
+
+    /**
+     * Get the actual sales qty for a specific item on a specific date.
+     * Uses targeted repository query instead of loading ALL sales records.
+     */
     private int getPrevQty(Long itemId, LocalDate date) {
-        return salesActualRepository.findAll().stream()
-                .filter(s -> s.getMenuItem().getId().equals(itemId)
-                        && s.getSaleDate().equals(date))
-                .mapToInt(s -> s.getQtySold() != null ? s.getQtySold() : 0)
-                .findFirst().orElse(0);
+        return salesActualRepository.findByMenuItem_IdAndSaleDate(itemId, date)
+                .map(s -> s.getQtySold() != null ? s.getQtySold() : 0)
+                .orElse(0);
     }
+
     public List<ForecastResponse> getTomorrowForecast() {
         LocalDate tomorrow = LocalDate.now().plusDays(1);
         List<MenuItem> activeItems = menuItemRepository.findByIsActiveTrue();
@@ -310,31 +353,47 @@ public class ForecastService {
         return responses;
     }
 
+    /**
+     * Get rolling average sales for an item over {days} days before {before}.
+     * Uses targeted repository query instead of loading ALL sales records.
+     */
     private double getRollingAvg(Long itemId, LocalDate before, int days) {
-        List<Integer> qtys = salesActualRepository.findAll().stream()
-                .filter(s -> s.getMenuItem().getId().equals(itemId)
-                        && s.getSaleDate().isBefore(before)
-                        && s.getSaleDate().isAfter(before.minusDays(days + 1)))
+        LocalDate start = before.minusDays(days);
+        List<Integer> qtys = salesActualRepository
+                .findByMenuItem_IdAndSaleDateBetween(itemId, start, before.minusDays(1))
+                .stream()
                 .map(s -> s.getQtySold() != null ? s.getQtySold() : 0)
                 .collect(Collectors.toList());
 
         if (qtys.isEmpty()) return menuItemRepository.findById(itemId)
                 .map(m -> (double) m.getBaseDailyQty()).orElse(50.0);
 
-        return qtys.stream().mapToInt(Integer::intValue).average().orElse(50.0);
+        return qtys.stream().mapToInt(Integer::intValue).average()
+                .orElseGet(() -> menuItemRepository.findById(itemId)
+                        .map(m -> (double) m.getBaseDailyQty()).orElse(50.0));
+    }
+
+    /**
+     * Compute days until next exam dynamically from AcademicCalendar.
+     * Falls back to configurable default if no exam found.
+     */
+    private int computeDaysUntilExam(LocalDate date) {
+        return academicCalendarRepository
+                .findFirstByEventTypeAndCalendarDateGreaterThanEqualOrderByCalendarDateAsc("EXAM", date)
+                .map(exam -> (int) ChronoUnit.DAYS.between(date, exam.getCalendarDate()))
+                .orElse(defaultDaysUntilExam);
     }
 
     private int getWeekOfSemester(LocalDate date) {
-    
-    LocalDate semStart;
-    if (date.getMonthValue() >= 9) {
-        semStart = LocalDate.of(date.getYear(), 9, 1);
-    } else {
-        semStart = LocalDate.of(date.getYear(), 2, 1);
+        LocalDate semStart;
+        if (date.getMonthValue() >= semesterOddStartMonth) {
+            semStart = LocalDate.of(date.getYear(), semesterOddStartMonth, 1);
+        } else {
+            semStart = LocalDate.of(date.getYear(), semesterEvenStartMonth, 1);
+        }
+        long daysBetween = ChronoUnit.DAYS.between(semStart, date);
+        return (int) Math.max(1, Math.min(semesterMaxWeeks, (daysBetween / 7) + 1));
     }
-    long days = java.time.temporal.ChronoUnit.DAYS.between(semStart, date);
-    return (int) Math.max(1, Math.min(20, (days / 7) + 1));
-}
 
     private ForecastResponse toResponse(Forecast forecast, MenuItem item) {
         List<String> reasons;
@@ -347,7 +406,7 @@ public class ForecastService {
         }
 
         double costIfOver = Math.round(
-                forecast.getPredictedQty() * 0.10
+                forecast.getPredictedQty() * defaultWastePct
                 * item.getIngredientCostPerUnit().doubleValue() * 100.0) / 100.0;
 
         return ForecastResponse.builder()

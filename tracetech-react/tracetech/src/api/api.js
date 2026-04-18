@@ -2,7 +2,9 @@ import axios from 'axios';
  
 const BASE_URL = 'http://localhost:8080';
  
-const API = axios.create({ baseURL: BASE_URL });
+const API = axios.create({
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8080'
+});
  
 // Attach JWT token to every request automatically
 API.interceptors.request.use((config) => {
@@ -58,3 +60,34 @@ export const submitBulkSales = (salesArray) =>
 // ── WEATHER ────────────────────────────────────────────────────
 export const getWeather = () =>
   API.get('/api/weather/today').then((r) => r.data);
+ 
+// ── PROCUREMENT ────────────────────────────────────────────────
+// Body: { menuItemId: predictedQty, ... }
+export const getProcurementPlan = (qtyMap) =>
+  API.post('/api/procurement/plan', qtyMap).then((r) => r.data);
+
+export const getProcurementPlanToday = () =>
+  API.get('/api/procurement/plan/today').then((r) => r.data);
+ 
+// ── PRODUCTION ─────────────────────────────────────────────────
+// Body: { menuItemId: predictedQty, ... }
+export const getProductionPlan = (qtyMap) =>
+  API.post('/api/production/plan', qtyMap).then((r) => r.data);
+ 
+// ── INVENTORY ──────────────────────────────────────────────────
+export const getInventory = () =>
+  API.get('/api/inventory').then((r) => r.data);
+ 
+// ── FEEDBACK (Step 5) ──────────────────────────────────────────
+// Body: { date: "2026-04-14", actuals: { menuItemId: qtySold, ... } }
+export const submitEndOfDay = (date, actuals) =>
+  API.post('/api/feedback/end-of-day', { date, actuals }).then((r) => r.data);
+
+export const getDailyAccuracy = (date) =>
+  API.get('/api/feedback/accuracy', { params: { date } }).then((r) => r.data);
+
+export const getRollingMape = () =>
+  API.get('/api/feedback/mape/rolling').then((r) => r.data);
+
+export const getMapeTrend = (since) =>
+  API.get('/api/feedback/mape/trend', { params: { since } }).then((r) => r.data);

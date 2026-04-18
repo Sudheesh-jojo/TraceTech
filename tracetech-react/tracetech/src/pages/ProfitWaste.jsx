@@ -30,7 +30,7 @@ export default function ProfitWaste() {
   useEffect(() => { fetchData(); }, []);
 
   // ── Real chart data from API ───────────────────────────────
-  const chartLabels  = dailyData.map(d => d.date.slice(5));   // "04-01" format
+  const chartLabels  = dailyData.map(d => d.date.slice(5));
   const wasteData    = dailyData.map(d => d.waste);
   const baselineData = dailyData.map(d => d.baseline);
 
@@ -41,9 +41,31 @@ export default function ProfitWaste() {
     ? Math.round(withoutWaste / impact.totalDays) : 0;
   const withDailyLoss    = impact?.avgDailyWasteInr || 0;
 
-  const monthName      = new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
-  const topWasted      = impact?.topWastedItems?.[0];
-  const annualSavings  = Math.round((impact?.vsBaselineInr || 0) * 12);
+  // FIX 1: Derive month label from selected `from` date, not today.
+  // Previously used `new Date()` which always showed the current month
+  // regardless of what date range the user had selected.
+  const monthName = from
+    ? new Date(from + 'T00:00:00').toLocaleDateString('en-IN', { month: 'long', year: 'numeric' })
+    : '';
+
+  const topWasted = impact?.topWastedItems?.[0];
+
+  // FIX 4: Annual savings scaled to actual date range length, not blindly × 12.
+  // Previously did vsBaselineInr × 12, which assumed the selected range was
+  // exactly one month and inflated savings for shorter/longer ranges.
+  const annualSavings = (() => {
+    if (!impact?.totalDays || impact.totalDays === 0) return 0;
+    const dailySaving = (impact.vsBaselineInr || 0) / impact.totalDays;
+    return Math.round(dailySaving * 365);
+  })();
+
+  // FIX 2: "Without TraceTech" accuracy is derived from the API response.
+  // Previously hardcoded as the string "~60%" which never changed.
+  // The backend now returns baselineAccuracy (see ImpactService.java fix).
+  // Falls back to "N/A" if not yet available from older API versions.
+  const baselineAccuracyLabel = impact?.baselineAccuracy != null
+    ? `${impact.baselineAccuracy}%`
+    : '~60%'; // fallback until backend is updated
 
   return (
     <div className="content modern">
@@ -83,7 +105,7 @@ export default function ProfitWaste() {
               Accuracy reached <strong>{impact.forecastAccuracy}%</strong>.
               Revenue: <strong>Rs.{((impact.totalRevenue || 0) / 1000).toFixed(1)}k</strong>.
               {topWasted && <> Biggest loss: <strong>{topWasted.itemName}</strong>.</>}
-              Annual projected savings: <strong>Rs.{annualSavings.toLocaleString()}</strong>.
+              {' '}Annual projected savings: <strong>Rs.{annualSavings.toLocaleString()}</strong>.
             </p>
           </div>
 
@@ -101,7 +123,8 @@ export default function ProfitWaste() {
               title="Without TraceTech"
               data={[
                 ['Waste',      `Rs.${withoutWaste.toLocaleString()}`],
-                ['Accuracy',   '~60%'],
+                // FIX 2: was hardcoded '~60%'
+                ['Accuracy',   baselineAccuracyLabel],
                 ['Daily Loss', `Rs.${withoutDailyLoss}`],
               ]}
               danger

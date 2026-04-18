@@ -7,6 +7,7 @@ import com.tracetech.backend.repository.ForecastRepository;
 import com.tracetech.backend.repository.SalesActualRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
  
@@ -22,7 +23,20 @@ public class ImpactService {
  
     private final SalesActualRepository salesActualRepository;
     private final ForecastRepository forecastRepository;
- 
+
+    // FIX 3: Baseline over-prep % is now configurable via application.properties
+    // instead of being hardcoded as 0.15 everywhere.
+    // Set   tracetech.baseline.overprep-pct=0.15   in application.properties.
+    // This means you can tune it per-deployment without touching source code.
+    @Value("${tracetech.baseline.overprep-pct:0.15}")
+    private double baselineOverprepPct;
+
+    // FIX 2: Baseline forecast accuracy % (what accuracy was before TraceTech).
+    // Set   tracetech.baseline.forecast-accuracy-pct=60.0   in application.properties.
+    // Previously this was the hardcoded string "~60%" in the frontend.
+    @Value("${tracetech.baseline.forecast-accuracy-pct:60.0}")
+    private double baselineForecastAccuracyPct;
+
     // ── Helper: fetch all sales in date range ──────────────────
     private List<SalesActual> getSalesInRange(LocalDate from, LocalDate to) {
         return salesActualRepository.findAll().stream()
@@ -45,6 +59,8 @@ public class ImpactService {
                     .avgMape(0.0)
                     .vsBaselineInr(0.0)
                     .wasteReductionPct(0.0)
+                    // FIX 2: include configurable baseline accuracy in empty response
+                    .baselineAccuracy(Math.round(baselineForecastAccuracyPct * 100.0) / 100.0)
                     .fromDate(from.toString())
                     .toDate(to.toString())
                     .totalDays(0)
@@ -68,48 +84,56 @@ public class ImpactService {
                 .sum();
  
         // ── Forecast accuracy ─────────────────────────────────
-        long withinRange = 0;
+        long withinTolerance = 0;
         double totalMape = 0;
         int forecastCount = 0;
- 
+
         for (SalesActual sale : allSales) {
             Optional<Forecast> forecast = forecastRepository
                     .findByMenuItem_IdAndForecastDate(
                             sale.getMenuItem().getId(), sale.getSaleDate());
- 
+
             if (forecast.isPresent()) {
                 Forecast f = forecast.get();
                 int actual    = sale.getQtySold();
                 int predicted = f.getPredictedQty();
- 
-                if (f.getRangeLow() != null && f.getRangeHigh() != null) {
-                    if (actual >= f.getRangeLow() && actual <= f.getRangeHigh()) {
-                        withinRange++;
-                    }
-                }
- 
+
                 if (actual > 0) {
-                    totalMape += Math.abs((double)(actual - predicted) / actual) * 100;
                     forecastCount++;
+
+                    // MAPE
+                    totalMape += Math.abs((double)(actual - predicted) / actual) * 100;
+
+                    // Tolerance-based accuracy (±5% or min 2 units)
+                    double tolerance = Math.max(2, actual * 0.05);
+                    if (Math.abs(actual - predicted) <= tolerance) {
+                        withinTolerance++;
+                    }
                 }
             }
         }
- 
-        double forecastAccuracy = forecastCount > 0 ? (double) withinRange / forecastCount * 100 : 0;
-        double avgMape          = forecastCount > 0 ? totalMape / forecastCount : 0;
- 
+
+        double forecastAccuracy = forecastCount > 0
+            ? (double) withinTolerance / forecastCount * 100
+            : 0;
+
+        double avgMape = forecastCount > 0
+            ? totalMape / forecastCount
+            : 0;
+
         // ── Baseline comparison ───────────────────────────────
-        // Assume without AI, canteen prepares 15% more than actual sales
+        // FIX 3: Uses @Value-injected baselineOverprepPct instead of hardcoded 0.15.
+        // Configure via: tracetech.baseline.overprep-pct=0.15 in application.properties
         double baselineWaste = allSales.stream()
                 .mapToDouble(s -> {
                     int sold = s.getQtySold();
-                    double baselineWasted = sold * 0.15; // 15% over-prep all wasted
+                    double baselineWasted = sold * baselineOverprepPct;
                     double costPerUnit = s.getMenuItem().getIngredientCostPerUnit().doubleValue();
                     return baselineWasted * costPerUnit;
                 })
                 .sum();
  
-        double vsBaselineInr    = Math.max(0, baselineWaste - totalWasteInr);
+        double vsBaselineInr     = Math.max(0, baselineWaste - totalWasteInr);
         double wasteReductionPct = baselineWaste > 0 ? (vsBaselineInr / baselineWaste) * 100 : 0;
  
         // ── Date range stats ──────────────────────────────────
@@ -132,7 +156,7 @@ public class ImpactService {
         // ── Top wasted items ──────────────────────────────────
         Map<String, double[]> wasteByItem = new LinkedHashMap<>();
         for (SalesActual sale : allSales) {
-            String name  = sale.getMenuItem().getName();
+            String name   = sale.getMenuItem().getName();
             int    wasted = sale.getQtyWasted() != null ? sale.getQtyWasted() : 0;
             double cost   = sale.getWasteCost()  != null ? sale.getWasteCost().doubleValue() : 0;
             wasteByItem.merge(name, new double[]{wasted, cost},
@@ -151,18 +175,20 @@ public class ImpactService {
  
         return ImpactSummaryResponse.builder()
                 .totalWasteInr(Math.round(totalWasteInr * 100.0) / 100.0)
-                .totalRevenue(Math.round(totalRevenue  * 100.0) / 100.0)
-                .totalProfit(Math.round(totalProfit    * 100.0) / 100.0)
+                .totalRevenue(Math.round(totalRevenue   * 100.0) / 100.0)
+                .totalProfit(Math.round(totalProfit     * 100.0) / 100.0)
                 .totalWasteQty(totalWasteQty)
-                .forecastAccuracy(Math.round(forecastAccuracy  * 100.0) / 100.0)
-                .avgMape(Math.round(avgMape               * 100.0) / 100.0)
-                .vsBaselineInr(Math.round(vsBaselineInr   * 100.0) / 100.0)
+                .forecastAccuracy(Math.round(forecastAccuracy   * 100.0) / 100.0)
+                .avgMape(Math.round(avgMape                     * 100.0) / 100.0)
+                .vsBaselineInr(Math.round(vsBaselineInr         * 100.0) / 100.0)
                 .wasteReductionPct(Math.round(wasteReductionPct * 100.0) / 100.0)
+                // FIX 2: send baseline accuracy to frontend so it's never hardcoded
+                .baselineAccuracy(Math.round(baselineForecastAccuracyPct * 100.0) / 100.0)
                 .fromDate(from.toString())
                 .toDate(to.toString())
                 .totalDays((int) distinctDays)
-                .avgDailyWasteInr(Math.round(avgDailyWaste   * 100.0) / 100.0)
-                .avgDailyRevenue(Math.round(avgDailyRevenue  * 100.0) / 100.0)
+                .avgDailyWasteInr(Math.round(avgDailyWaste    * 100.0) / 100.0)
+                .avgDailyRevenue(Math.round(avgDailyRevenue   * 100.0) / 100.0)
                 .topWastedItems(topWasted)
                 .build();
     }
@@ -172,18 +198,17 @@ public class ImpactService {
  
         List<SalesActual> allSales = getSalesInRange(from, to);
  
-        // Pre-fill every date in range with 0 so chart has no gaps
         Map<LocalDate, double[]> byDate = new LinkedHashMap<>();
         LocalDate cur = from;
         while (!cur.isAfter(to)) {
-            byDate.put(cur, new double[]{0.0, 0.0}); // [waste, baselineWaste]
+            byDate.put(cur, new double[]{0.0, 0.0});
             cur = cur.plusDays(1);
         }
  
-        // Accumulate real waste and per-day baseline
+        // FIX 3: Uses configurable baselineOverprepPct instead of hardcoded 0.15
         for (SalesActual s : allSales) {
             double waste = s.getWasteCost() != null ? s.getWasteCost().doubleValue() : 0;
-            double baselineWaste = s.getQtySold() * 0.15
+            double baselineWaste = s.getQtySold() * baselineOverprepPct
                     * s.getMenuItem().getIngredientCostPerUnit().doubleValue();
  
             byDate.merge(s.getSaleDate(),

@@ -86,7 +86,7 @@ export default function Dashboard({ onNavigate }) {
               <div className="kpi-sub">{forecasts.length} items forecasted</div>
             </div>
             <div className="kpi-card blue">
-              <div className="kpi-label">Forecast Accuracy</div>
+              <div className="kpi-label">Forecast Reliability</div>
               <div className="kpi-value">{impact?.forecastAccuracy}%</div>
               <div className="kpi-sub">{impact?.avgMape}% avg MAPE</div>
             </div>

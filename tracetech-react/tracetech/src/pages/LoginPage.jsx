@@ -26,7 +26,7 @@ export default function LoginPage({ onLogin }) {
     <div className="login-page" style={{ width: '100%', height: '100vh' }}>
       <div className="login-card">
         <div className="login-logo">
-          <div style={{ fontSize: 36, marginBottom: 8 }}>🍱</div>
+          <div style={{ fontSize: 36, marginBottom: 8 }}></div>
           <h1>TraceTech</h1>
           <p>RIT Canteen · AI Forecasting System</p>
         </div>

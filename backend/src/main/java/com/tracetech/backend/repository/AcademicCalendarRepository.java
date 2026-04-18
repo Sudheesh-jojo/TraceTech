@@ -9,4 +9,8 @@ import java.util.Optional;
 @Repository
 public interface AcademicCalendarRepository extends JpaRepository<AcademicCalendar, Long> {
     Optional<AcademicCalendar> findByCalendarDate(LocalDate date);
-}
+
+    /** Find the next exam-type event on or after the given date (for days_until_exam). */
+    Optional<AcademicCalendar> findFirstByEventTypeAndCalendarDateGreaterThanEqualOrderByCalendarDateAsc(
+            String eventType, LocalDate date);
+}

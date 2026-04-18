@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: tracetech-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: tracetech123
+      MYSQL_DATABASE: tracetech
+      MYSQL_USER: rootsudheesh
+      MYSQL_PASSWORD: tracetech123
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tracetech-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-ptracetech123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  fastapi:
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile
+    container_name: tracetech-fastapi
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - tracetech-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  springboot:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tracetech-springboot
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/tracetech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+      SPRING_DATASOURCE_USERNAME: rootsudheesh
+      SPRING_DATASOURCE_PASSWORD: tracetech123
+      JWT_SECRET: tracetechwashereanditwassecret2026
+      JWT_EXPIRATION: 86400000
+      ML_SERVICE_URL: http://fastapi:8000
+      WEATHER_API_KEY: f8952584d57edfc96bcc4c208d8829be
+      WEATHER_CITY: Chennai
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      fastapi:
+        condition: service_healthy
+    networks:
+      - tracetech-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/menu/items"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  react:
+    build:
+      context: "./tracetech-react/tracetech"
+      dockerfile: Dockerfile
+      args:
+        REACT_APP_API_URL: http://localhost:8080
+    container_name: tracetech-react
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      springboot:
+        condition: service_healthy
+    networks:
+      - tracetech-network
+
+networks:
+  tracetech-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+    driver: local

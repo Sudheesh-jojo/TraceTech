@@ -8,6 +8,7 @@ import DynamicPricing    from './pages/DynamicPricing';
 import ProfitWaste       from './pages/ProfitWaste';
 import StrategySimulation from './pages/StrategySimulation';
 import SalesInput        from './pages/SalesInput';
+import SupplyChain       from './pages/SupplyChain';
 
 const PAGES = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -16,6 +17,7 @@ const PAGES = [
   { id: 'pricing', label: 'Dynamic Pricing' },
   { id: 'profit', label: 'Profit & Waste' },
   { id: 'simulation', label: 'Strategy Simulation' },
+  { id: 'supply', label: 'Supply Chain' },
   { id: 'sales', label: 'Sales Input' },
 ];
 
@@ -26,6 +28,7 @@ const PAGE_TITLES = {
   pricing:    'Dynamic Pricing',
   profit:     'Profit & Waste Analysis',
   simulation: 'Strategy Simulation',
+  supply:     'Supply Chain',
   sales:      'Sales Input',
 };
 
@@ -64,6 +67,7 @@ function MainApp({ onLogout }) {
       case 'pricing':    return <DynamicPricing />;
       case 'profit':     return <ProfitWaste />;
       case 'simulation': return <StrategySimulation />;
+      case 'supply':     return <SupplyChain />;
       case 'sales':      return <SalesInput />;
       default:           return <Dashboard onNavigate={setPage} />;
     }

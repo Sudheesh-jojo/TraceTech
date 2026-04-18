@@ -36,6 +36,18 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/error").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // Permit all API endpoints so Supply Chain and other pages work
+                // even if JWT token is missing or expired
+                .requestMatchers("/api/forecast/**").permitAll()
+                .requestMatchers("/api/procurement/**").permitAll()
+                .requestMatchers("/api/production/**").permitAll()
+                .requestMatchers("/api/inventory/**").permitAll()
+                .requestMatchers("/api/inventory").permitAll()
+                .requestMatchers("/api/feedback/**").permitAll()
+                .requestMatchers("/api/impact/**").permitAll()
+                .requestMatchers("/api/menu/**").permitAll()
+                .requestMatchers("/api/sales/**").permitAll()
+                .requestMatchers("/api/weather/**").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

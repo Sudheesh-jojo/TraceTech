@@ -1,48 +1,39 @@
 package com.tracetech.backend.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class ImpactSummaryResponse {
-    // Overall totals
-    private Double totalWasteInr;        // total ₹ wasted
-    private Double totalRevenue;         // total ₹ earned
-    private Double totalProfit;          // revenue - prep cost
-    private Integer totalWasteQty;       // total units wasted
 
-    // Forecast accuracy
-    private Double forecastAccuracy;     // % of items within predicted range
-    private Double avgMape;              // mean absolute % error
+    private double totalWasteInr;
+    private double totalRevenue;
+    private double totalProfit;
+    private int    totalWasteQty;
+    private double forecastAccuracy;
+    private double avgMape;
+    private double vsBaselineInr;
+    private double wasteReductionPct;
 
-    // The big number — what we saved vs vendor's old baseline
-    private Double vsBaselineInr;        // ₹ saved by using TraceTech
-    private Double wasteReductionPct;    // % reduction in waste
+    // FIX 2: New field — replaces the hardcoded "~60%" string in the frontend.
+    // Populated from application.properties: tracetech.baseline.forecast-accuracy-pct
+    private double baselineAccuracy;
 
-    // Date range
     private String fromDate;
     private String toDate;
-    private Integer totalDays;
-
-    // Per day averages
-    private Double avgDailyWasteInr;
-    private Double avgDailyRevenue;
-
-    // Top wasted items
-    private java.util.List<ItemWasteStat> topWastedItems;
+    private int    totalDays;
+    private double avgDailyWasteInr;
+    private double avgDailyRevenue;
+    private List<ItemWasteStat> topWastedItems;
 
     @Data
     @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ItemWasteStat {
         private String itemName;
-        private Integer totalWasteQty;
-        private Double totalWasteCost;
+        private int    totalWasteQty;
+        private double totalWasteCost;
     }
 }
